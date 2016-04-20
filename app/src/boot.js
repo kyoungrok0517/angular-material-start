@@ -24,21 +24,21 @@ import { LogDecorator, ExternalLogger } from 'utils/LogDecorator';
  * the application classes have been loaded.
  */
 angular
-  .element( document )
-  .ready( function() {
+  .element(document)
+  .ready(function () {
 
     let appName = 'starter-app';
     let $log = new ExternalLogger();
 
-    $log = $log.getInstance( "BOOTSTRAP" );
-    $log.debug( "Initializing '{0}'", [ appName ] );
+    $log = $log.getInstance("BOOTSTRAP");
+    $log.debug("Initializing '{0}'", [appName]);
 
     let body = document.getElementsByTagName("body")[0];
-    let app  = angular
-          .module( appName, [ material, main ] )
-          .config( ['$provide', LogDecorator] );
+    let app = angular
+      .module(appName, [material, main])
+      .config(['$provide', LogDecorator]);
 
-    angular.bootstrap( body, [ app.name ], { strictDi: false })
+    angular.bootstrap(body, [app.name], { strictDi: false })
 
   });
 

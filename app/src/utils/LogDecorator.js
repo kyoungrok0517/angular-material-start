@@ -20,8 +20,7 @@ function LogDecorator($provide) {
 }
 
 
-function ExternalLogger()
-{
+function ExternalLogger() {
     /**
      * Determines if the requested console logging method is available, since it is not with IE.
      *
@@ -29,15 +28,12 @@ function ExternalLogger()
      * @returns {object} Indicates if the console logging method is available.
      * @private
      */
-    var prepareLogToConsole = function (method)
-    {
+    var prepareLogToConsole = function (method) {
         var console = window.console,
-            isFunction = function (fn)
-            {
-                return(typeof (fn) == typeof (Function));
+            isFunction = function (fn) {
+                return (typeof (fn) == typeof (Function));
             },
-            isAvailableConsoleFor = function (method)
-            {
+            isAvailableConsoleFor = function (method) {
                 var isPhantomJS = new BrowserDetect().browser != "PhantomJS";
 
                 // NOTE: Tried using this for less logging in the console/terminal, but then logging in IDE is
@@ -45,29 +41,26 @@ function ExternalLogger()
 
                 return console && console[method] && isFunction(console[method]);
             },
-            logFn = function (message)
-            {
-                if(isAvailableConsoleFor(method))
-                {
-                    try
-                    {
+            logFn = function (message) {
+                if (isAvailableConsoleFor(method)) {
+                    try {
                         console[method](message);
 
                     }
-                    catch(e)
-                    {}
+                    catch (e)
+                    { }
                 }
             };
 
         return logFn;
     },
-    $log = {
-        log  : prepareLogToConsole("log"),
-        info : prepareLogToConsole("info"),
-        warn : prepareLogToConsole("warn"),
-        debug: prepareLogToConsole("debug"),
-        error: prepareLogToConsole("error")
-    };
+        $log = {
+            log: prepareLogToConsole("log"),
+            info: prepareLogToConsole("info"),
+            warn: prepareLogToConsole("warn"),
+            debug: prepareLogToConsole("debug"),
+            error: prepareLogToConsole("error")
+        };
 
     // Publish instance of $log simulator; with enhanced functionality
     return new enhanceLog($log);
@@ -179,43 +172,43 @@ function makeTryCatch(notifyFn, scope) {
      * Report error (with stack trace if possible) to the logger function
      */
     var reportError = function (reason) {
-                if (notifyFn != null) {
-                    var error = (reason && reason.stack) ? reason : null,
-                            message = reason != null ? String(reason) : "";
+        if (notifyFn != null) {
+            var error = (reason && reason.stack) ? reason : null,
+                message = reason != null ? String(reason) : "";
 
-                    if (error != null) {
-                        message = error.message + "\n" + error.stack;
-                    }
+            if (error != null) {
+                message = error.message + "\n" + error.stack;
+            }
 
-                    notifyFn.apply(scope, [message]);
+            notifyFn.apply(scope, [message]);
+        }
+
+        return reason;
+    },
+        /**
+         * Publish the tryCatch() guard 'n report function
+         */
+        tryCatch = function (actionFn, scope, args) {
+            try {
+                // Invoke the targeted `actionFn`
+                var result = angular.isFunction(actionFn) ? actionFn.apply(scope, args || []) : String(actionFn),
+                    promise = (angular.isObject(result) && result.then) ? result : null;
+
+                if (promise != null) {
+                    // Catch and report any promise rejection reason...
+                    promise.then(null, reportError);
                 }
 
-                return reason;
-            },
-            /**
-             * Publish the tryCatch() guard 'n report function
-             */
-            tryCatch = function (actionFn, scope, args) {
-                try {
-                    // Invoke the targeted `actionFn`
-                    var result = angular.isFunction(actionFn) ? actionFn.apply(scope, args || []) : String(actionFn),
-                            promise = (angular.isObject(result) && result.then) ? result : null;
+                actionFn = null;
+                return result;
 
-                    if (promise != null) {
-                        // Catch and report any promise rejection reason...
-                        promise.then(null, reportError);
-                    }
+            }
+            catch (e) {
+                actionFn = null;
+                throw reportError(e);
+            }
 
-                    actionFn = null;
-                    return result;
-
-                }
-                catch (e) {
-                    actionFn = null;
-                    throw reportError(e);
-                }
-
-            };
+        };
 
     return tryCatch;
 }
@@ -274,7 +267,7 @@ function DateTime() {
 
     // Publish API for DateTime utils
     return {
-        now : function () {
+        now: function () {
             return buildTimeString(new Date());
         }
     };
@@ -285,99 +278,99 @@ function BrowserDetect() {
 
     // NOTE: It's important to list PhantomJS first since it has the same browser information as Safari
     this.dataBrowser = [
-    {
-        string: "PhantomJS",
-        subString: "PhantomJS",
-        identity: "PhantomJS",
-        versionSearch: "PhantomJS"
-    },
-    {
-        string: navigator.userAgent,
-        subString: "Chrome",
-        identity: "Chrome"
-    },
-    {
-        string: navigator.userAgent,
-        subString: "OmniWeb",
-        versionSearch: "OmniWeb/",
-        identity: "OmniWeb"
-    },
-    {
-        string: navigator.vendor,
-        subString: "Apple",
-        identity: "Safari",
-        versionSearch: "Version"
-    },
-    {
-        prop: window.opera,
-        identity: "Opera",
-        versionSearch: "Version"
-    },
-    {
-        string: navigator.vendor,
-        subString: "iCab",
-        identity: "iCab"
-    },
-    {
-        string: navigator.vendor,
-        subString: "KDE",
-        identity: "Konqueror"
-    },
-    {
-        string: navigator.userAgent,
-        subString: "Firefox",
-        identity: "Firefox"
-    },
-    {
-        string: navigator.vendor,
-        subString: "Camino",
-        identity: "Camino"
-    },
-    { // for newer Netscapes (6+)
-        string: navigator.userAgent,
-        subString: "Netscape",
-        identity: "Netscape"
-    },
-    {
-        string: navigator.userAgent,
-        subString: "MSIE",
-        identity: "Explorer",
-        versionSearch: "MSIE"
-    },
-    {
-        string: navigator.userAgent,
-        subString: "Gecko",
-        identity: "Mozilla",
-        versionSearch: "rv"
-    },
-    {
-        // for older Netscapes (4-)
-        string: navigator.userAgent,
-        subString: "Mozilla",
-        identity: "Netscape",
-        versionSearch: "Mozilla"
-    }],
-    this.dataOS = [
-    {
-        string: navigator.platform,
-        subString: "Win",
-        identity: "Windows"
-    },
-    {
-        string: navigator.platform,
-        subString: "Mac",
-        identity: "Mac"
-    },
-    {
-        string: navigator.userAgent,
-        subString: "iPhone",
-        identity: "iPhone/iPod"
-    },
-    {
-        string: navigator.platform,
-        subString: "Linux",
-        identity: "Linux"
-    }];
+        {
+            string: "PhantomJS",
+            subString: "PhantomJS",
+            identity: "PhantomJS",
+            versionSearch: "PhantomJS"
+        },
+        {
+            string: navigator.userAgent,
+            subString: "Chrome",
+            identity: "Chrome"
+        },
+        {
+            string: navigator.userAgent,
+            subString: "OmniWeb",
+            versionSearch: "OmniWeb/",
+            identity: "OmniWeb"
+        },
+        {
+            string: navigator.vendor,
+            subString: "Apple",
+            identity: "Safari",
+            versionSearch: "Version"
+        },
+        {
+            prop: window.opera,
+            identity: "Opera",
+            versionSearch: "Version"
+        },
+        {
+            string: navigator.vendor,
+            subString: "iCab",
+            identity: "iCab"
+        },
+        {
+            string: navigator.vendor,
+            subString: "KDE",
+            identity: "Konqueror"
+        },
+        {
+            string: navigator.userAgent,
+            subString: "Firefox",
+            identity: "Firefox"
+        },
+        {
+            string: navigator.vendor,
+            subString: "Camino",
+            identity: "Camino"
+        },
+        { // for newer Netscapes (6+)
+            string: navigator.userAgent,
+            subString: "Netscape",
+            identity: "Netscape"
+        },
+        {
+            string: navigator.userAgent,
+            subString: "MSIE",
+            identity: "Explorer",
+            versionSearch: "MSIE"
+        },
+        {
+            string: navigator.userAgent,
+            subString: "Gecko",
+            identity: "Mozilla",
+            versionSearch: "rv"
+        },
+        {
+            // for older Netscapes (4-)
+            string: navigator.userAgent,
+            subString: "Mozilla",
+            identity: "Netscape",
+            versionSearch: "Mozilla"
+        }],
+        this.dataOS = [
+            {
+                string: navigator.platform,
+                subString: "Win",
+                identity: "Windows"
+            },
+            {
+                string: navigator.platform,
+                subString: "Mac",
+                identity: "Mac"
+            },
+            {
+                string: navigator.userAgent,
+                subString: "iPhone",
+                identity: "iPhone/iPod"
+            },
+            {
+                string: navigator.platform,
+                subString: "Linux",
+                identity: "Linux"
+            }];
 
     this.init();
 }
@@ -388,8 +381,7 @@ BrowserDetect.prototype = {
      * Sets the browser version and OS(Operating Systems) uses {@link mindspace.utils:BrowserDetect#searchString searchString}
      * and {@link mindspace.utils:BrowserDetect#searchVersion searchVersion} internally
      */
-    init: function ()
-    {
+    init: function () {
         this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
         this.version = this.searchVersion(navigator.userAgent) || this.searchVersion(navigator.appVersion) ||
             "an unknown version";
@@ -402,8 +394,7 @@ BrowserDetect.prototype = {
      * Checks whether the browser is IE8. Root element(html) is already set with class='ie8
      * this function uses the same class reference and provides the status.
      */
-    isIE8: function ()
-    {
+    isIE8: function () {
         return (document.documentElement.hasAttribute("class")) && (document.documentElement.getAttribute("class") === "ie8");
     },
 
@@ -412,23 +403,18 @@ BrowserDetect.prototype = {
      * Also sets the versionSearchString parameter which would be used by
      * {@link mindspace.utils:BrowserDetect#searchVersion searchVersion}
      */
-    searchString: function (data)
-    {
-        for(var i = 0; i < data.length; i++)
-        {
+    searchString: function (data) {
+        for (var i = 0; i < data.length; i++) {
             var dataString = data[i].string;
             var dataProp = data[i].prop;
 
             this.versionSearchString = data[i].versionSearch || data[i].identity;
-            if(dataString)
-            {
-                if(dataString.indexOf(data[i].subString) != -1)
-                {
+            if (dataString) {
+                if (dataString.indexOf(data[i].subString) != -1) {
                     return data[i].identity;
                 }
             }
-            else if(dataProp)
-            {
+            else if (dataProp) {
                 return data[i].identity;
             }
         }
@@ -437,11 +423,9 @@ BrowserDetect.prototype = {
     /**
      * User for determining the browser version based on input string
      */
-    searchVersion: function (dataString)
-    {
+    searchVersion: function (dataString) {
         var index = dataString.indexOf(this.versionSearchString);
-        if(index == -1)
-        {
+        if (index == -1) {
             return;
         }
         return parseFloat(dataString.substring(index + this.versionSearchString.length + 1));

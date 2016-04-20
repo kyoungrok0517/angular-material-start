@@ -30,16 +30,16 @@ export default supplant;
  * NOTE: this supplant() method is from Crockfords `Remedial Javascript`
  *
  */
-function supplant( template, values, pattern ) {
+function supplant(template, values, pattern) {
     pattern = pattern || /\{([^\{\}]*)\}/g;
 
-    return template.replace(pattern, function(a, b) {
+    return template.replace(pattern, function (a, b) {
         var p = b.split('.'),
             r = values;
 
         try {
-            for (var s in p) { r = r[p[s]];  }
-        } catch(e){
+            for (var s in p) { r = r[p[s]]; }
+        } catch (e) {
             r = a;
         }
 
@@ -54,7 +54,7 @@ Function.prototype.method = function (name, func) {
     return this;
 };
 
-String.method("supplant", function( values, pattern ) {
+String.method("supplant", function (values, pattern) {
     var self = this;
     return supplant(self, values, pattern);
 });
