@@ -8,6 +8,11 @@
  */
 function UsersDataservice($q, $log) {
   var users = [
+     {
+      name: '장경록',
+      avatar: 'svg-1',
+      content: '구글에서 배포한 무료 한글 폰트인 Noto Sans를 테스트하기 위해 추가된 텍스트입니다. 텍스트가 예쁘게 나왔으면 좋겠네요.'
+    },
     {
       name: 'Lia Lugo',
       avatar: 'svg-1',
